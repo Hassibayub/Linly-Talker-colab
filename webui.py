@@ -11,9 +11,15 @@ from LLM import LLM
 from TTS import EdgeTTS
 from src.cost_time import calculate_time
 
+from pyngrok import ngrok
+
+
 from configs import *
+
 os.environ["GRADIO_TEMP_DIR"]= './temp'
 os.environ["WEBUI"] = "true"
+ngrok.set_auth_token("2j1PCv3xmHA5Vjw4eBWSZqRfqy6_5zjuHaK8urTiiwUgRjxQs")
+
 def get_title(title = 'Linly 智能对话系统 (Linly-Talker)'):
     description = f"""
     <p style="text-align: center; font-weight: bold;">
@@ -1329,6 +1335,11 @@ if __name__ == "__main__":
         error_print("EdgeTTS模块加载失败，请检查网络是否正常连接，否则无法使用")
 
     gr.close_all()
+
+    http_tunnel = ngrok.connect(7860, "http")
+    print("Public URL:", http_tunnel.public_url)
+
+
     # demo_app = app()
     demo_img = app_img()
     demo_multi = app_multi()
@@ -1350,12 +1361,17 @@ if __name__ == "__main__":
             ],
         title = "Linly-Talker WebUI")
     demo.queue()
-    demo.launch(server_name=ip, # 本地端口localhost:127.0.0.1 全局端口转发:"0.0.0.0"
-                server_port=port,
-                # 似乎在Gradio4.0以上版本可以不使用证书也可以进行麦克风对话
-                # ssl_certfile=ssl_certfile,
-                # ssl_keyfile=ssl_keyfile,
-                # ssl_verify=False,
-                # share=True,
-                debug=True,
-                )
+    
+    demo.launch(server_name="0.0.0.0", debug=True, share=True)  # To run on ngrok server
+    
+    
+    
+    # demo.launch(server_name=ip, # 本地端口localhost:127.0.0.1 全局端口转发:"0.0.0.0"
+    #             server_port=port,
+    #             # 似乎在Gradio4.0以上版本可以不使用证书也可以进行麦克风对话
+    #             # ssl_certfile=ssl_certfile,
+    #             # ssl_keyfile=ssl_keyfile,
+    #             # ssl_verify=False,
+    #             # share=True,
+    #             debug=True,
+    #             )
