@@ -9,7 +9,10 @@ from TTS import EdgeTTS
 from src.cost_time import calculate_time
 
 from configs import *
+from pyngrok import ngrok
+
 os.environ["GRADIO_TEMP_DIR"]= './temp'
+ngrok.set_auth_token("2j1PCv3xmHA5Vjw4eBWSZqRfqy6_5zjuHaK8urTiiwUgRjxQs")
 
 description = """<p style="text-align: center; font-weight: bold;">
     <span style="font-size: 28px;">Linly 智能对话系统 (Linly-Talker)</span>
@@ -190,10 +193,15 @@ if __name__ == "__main__":
     demo = main()
     demo.queue()
     # demo.launch()
-    demo.launch(server_name=ip, # 本地端口localhost:127.0.0.1 全局端口转发:"0.0.0.0"
-                server_port=port,
-                # 似乎在Gradio4.0以上版本可以不使用证书也可以进行麦克风对话
-                ssl_certfile=ssl_certfile,
-                ssl_keyfile=ssl_keyfile,
-                ssl_verify=False,
-                debug=True)
+    # demo.launch(server_name=ip, # 本地端口localhost:127.0.0.1 全局端口转发:"0.0.0.0"
+    #             server_port=port,
+    #             # 似乎在Gradio4.0以上版本可以不使用证书也可以进行麦克风对话
+    #             ssl_certfile=ssl_certfile,
+    #             ssl_keyfile=ssl_keyfile,
+    #             ssl_verify=False,
+    #             debug=True)
+
+    http_tunnel = ngrok.connect(7860, "http")
+    print("Public URL:", http_tunnel.public_url)
+
+    demo.launch(server_name="0.0.0.0", debug=True, share=True)  # To run on ngrok server
